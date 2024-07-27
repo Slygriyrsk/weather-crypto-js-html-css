@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6));
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card {
+            width: 90%;
+            max-width: 470px;
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #444;
+            margin: 100px auto 0;
+            border-radius: 20px;
+            padding: 40px 35px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .search {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search input {
+            border: 0;
+            outline: 0;
+            background: rgba(255, 255, 255, 0.6);
+            color: #555;
+            padding: 10px 25px;
+            height: 60px;
+            border-radius: 30px;
+            flex: 1;
+            margin-right: 16px;
+            font-size: 18px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .search button {
+            border: 0;
+            outline: 0;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .search button img {
+            width: 16px;
+        }
+
+        .weather-icon {
+            width: 170px;
+            margin-top: 30px;
+        }
+
+        .weather h1 {
+            font-size: 80px;
+            font-weight: 500;
+        }
+
+        .weather h2 {
+            font-size: 45px;
+            font-weight: 400;
+            margin-top: -10px;
+        }
+
+        .details {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            margin-top: 50px;
+        }
+
+        .col {
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .col img {
+            width: 40px;
+            margin-right: 10px;
+        }
+
+        .humidity, .wind {
+            font-size: 28px;
+            margin-top: -6px;
+        }
+
+        .snowflakes, .rain, .sunny, .spring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .snowflake, .raindrop, .sunbeam, .flower {
+            position: absolute;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: fall linear infinite;
+        }
+
+        .snowflake {
+            width: 10px;
+            height: 10px;
+            animation-duration: 10s;
+        }
+
+        .raindrop {
+            width: 2px;
+            height: 20px;
+            background: blue;
+            animation-duration: 1s;
+        }
+
+        .sunbeam {
+            width: 10px;
+            height: 10px;
+            background: yellow;
+            animation-duration: 5s;
+        }
+
+        .flower {
+            width: 15px;
+            height: 15px;
+            background: pink;
+            animation-duration: 8s;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter city name" spellcheck="false">
+            <button><img src="images/search.png" alt="Search"></button>
+        </div>
+        <div class="weather">
+            <img src="./images/rain.png" alt="Rain" class="weather-icon">
+            <h1 class="temp">22 °C</h1>
+            <h2 class="city">New York</h2>
+            <div class="details">
+                <div class="col">
+                    <img src="./images/humidity.png">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="./images/wind.png">
+                    <div>
+                        <p class="wind">15 km/h</p>
+                        <p>Wind Speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="snowflakes"></div>
+    <div class="rain"></div>
+    <div class="sunny"></div>
+    <div class="spring"></div>
+
+    <script>
+        // const apiKey = "a1be2f7331344ddb9bb778b478edec31";
+        // const apiURL = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+        // const searchBox = document.querySelector(".search input");
+        // const searchBtn = document.querySelector(".search button");
+        // const weatherIcon = document.querySelector(".weather-icon");
+        // const snowflakes = document.querySelector(".snowflakes");
+        // const rain = document.querySelector(".rain");
+        // const sunny = document.querySelector(".sunny");
+        // const spring = document.querySelector(".spring");
+
+        // async function checkWeather(city) {
+        //     const response = await fetch(apiURL + city + `&appid=${apiKey}`);
+        //     var data = await response.json();
+
+        //     document.querySelector(".city").innerHTML = data.name;
+        //     document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + " °C";
+        //     document.querySelector(".humidity").innerHTML = data.main.humidity + " %";
+        //     document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+        //     snowflakes.innerHTML = '';
+        //     rain.innerHTML = '';
+        //     sunny.innerHTML = '';
+        //     spring.innerHTML = '';
+
+        //     if (data.weather[0].main == "Clouds") {
+        //         weatherIcon.src = "./images/clouds.png";
+        //         document.body.style.background = "rgba(166, 166, 166, 0.6)"; // Light gray for clouds
+        //     } else if (data.weather[0].main == "Clear") {
+        //         weatherIcon.src = "./images/clear.png";
+        //         document.body.style.background = "rgba(135, 206, 235, 0.6)"; // Sky blue for clear weather
+        //         for (let i = 0; i < 100; i++) {
+        //             const sunbeam = document.createElement('div');
+        //             sunbeam.classList.add('sunbeam');
+        //             sunbeam.style.left = Math.random() * 100 + 'vw';
+        //             sunbeam.style.animationDuration = (Math.random() * 2 + 3) + 's';
+        //             sunny.appendChild(sunbeam);
+        //         }
+        //     } else if (data.weather[0].main == "Rain") {
+        //         weatherIcon.src = "./images/rain.png";
+        //         document.body.style.background = "rgba(74, 74, 74, 0.6)"; // Dark gray for rain
+        //         for (let i = 0; i < 200; i++) {
+        //             const raindrop = document.createElement('div');
+        //             raindrop.classList.add('raindrop');
+        //             raindrop.style.left = Math.random() * 100 + 'vw';
+        //             raindrop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+        //             rain.appendChild(raindrop);
+        //         }
+        //     } else if (data.weather[0].main == "Drizzle") {
+        //         weatherIcon.src = "./images/drizzle.png";
+        //         document.body.style.background = "rgba(142, 142, 142, 0.6)"; // Medium gray for drizzle
+        //         for (let i = 0; i < 100; i++) {
+        //             const raindrop = document.createElement('div');
+        //             raindrop.classList.add('raindrop');
+        //             raindrop.style.left = Math.random() * 100 + 'vw';
+        //             raindrop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+        //             rain.appendChild(raindrop);
+        //         }
+        //     } else if (data.weather[0].main == "Mist") {
+        //         weatherIcon.src = "./images/mist.png";
+        //         document.body.style.background = "rgba(179, 179, 179, 0.6)"; // Light gray for mist
+        //     } else if (data.weather[0].main == "Snow") {
+        //         weatherIcon.src = "./images/snow.png";
+        //         document.body.style.background = "rgba(240, 248, 255, 0.6)"; // Alice blue for snow
+        //         for (let i = 0; i < 100; i++) {
+        //             const snowflake = document.createElement('div');
+        //             snowflake.classList.add('snowflake');
+        //             snowflake.style.left = Math.random() * 100 + 'vw';
+        //             snowflake.style.animationDuration = (Math.random() * 2 + 5) + 's';
+        //             snowflakes.appendChild(snowflake);
+        //         }
+        //     }
+        // }
+
+        // searchBtn.addEventListener("click", () => {
+        //     checkWeather(searchBox.value);
+        // });
+        const apiKey = "a1be2f7331344ddb9bb778b478edec31";
+const apiURL = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+const searchBox = document.querySelector(".search input");
+const searchBtn = document.querySelector(".search button");
+const weatherIcon = document.querySelector(".weather-icon");
+const snowflakes = document.querySelector(".snowflakes");
+const rain = document.querySelector(".rain");
+const sunny = document.querySelector(".sunny");
+const spring = document.querySelector(".spring");
+
+async function checkWeather(city) {
+    try {
+        const response = await fetch(apiURL + city + `&appid=${apiKey}`);
+        const data = await response.json();
+
+        const weatherCondition = data.weather[0].main;
+
+        document.querySelector(".city").textContent = data.name;
+        document.querySelector(".temp").textContent = Math.round(data.main.temp) + " °C";
+        document.querySelector(".humidity").textContent = data.main.humidity + " %";
+        document.querySelector(".wind").textContent = data.wind.speed + " km/h";
+
+        setWeatherDisplay(weatherCondition);
+    } catch (error) {
+        console.error("Error fetching weather data:", error);
+    }
+}
+
+function setWeatherDisplay(weatherCondition) {
+    const body = document.body;
+
+    // Remove existing weather animations
+    snowflakes.innerHTML = '';
+    rain.innerHTML = '';
+    sunny.innerHTML = '';
+    spring.innerHTML = '';
+
+    switch (weatherCondition) {
+        case "Clouds":
+            weatherIcon.src = "./images/clouds.png";
+            body.style.background = "rgba(166, 166, 166, 0.6)"; // Light gray for clouds
+            createClouds();
+            break;
+        case "Clear":
+            weatherIcon.src = "./images/clear.png";
+            body.style.background = "rgba(135, 206, 235, 0.6)"; // Sky blue for clear weather
+            createSunbeams();
+            break;
+        case "Rain":
+            weatherIcon.src = "./images/rain.png";
+            body.style.background = "rgba(74, 74, 74, 0.6)"; // Dark gray for rain
+            createRaindrops();
+            break;
+        case "Drizzle":
+            weatherIcon.src = "./images/drizzle.png";
+            body.style.background = "rgba(142, 142, 142, 0.6)"; // Medium gray for drizzle
+            createRaindrops();
+            break;
+        case "Mist":
+            weatherIcon.src = "./images/mist.png";
+            body.style.background = "rgba(179, 179, 179, 0.6)"; // Light gray for mist
+            createMist();
+            break;
+        case "Snow":
+            weatherIcon.src = "./images/snow.png";
+            body.style.background = "rgba(240, 248, 255, 0.6)"; // Alice blue for snow
+            createSnowflakes();
+            break;
+        default:
+            break;
+    }
+}
+
+function createSunbeams() {
+    for (let i = 0; i < 100; i++) {
+        const sunbeam = document.createElement('div');
+        sunbeam.classList.add('sunbeam');
+        sunbeam.style.left = Math.random() * 100 + 'vw';
+        sunbeam.style.animationDuration = (Math.random() * 2 + 3) + 's';
+        sunny.appendChild(sunbeam);
+    }
+}
+
+function createRaindrops() {
+    for (let i = 0; i < 200; i++) {
+        const raindrop = document.createElement('div');
+        raindrop.classList.add('raindrop');
+        raindrop.style.left = Math.random() * 100 + 'vw';
+        raindrop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+        rain.appendChild(raindrop);
+    }
+}
+
+function createSnowflakes() {
+    for (let i = 0; i < 100; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        snowflake.style.left = Math.random() * 100 + 'vw';
+        snowflake.style.animationDuration = (Math.random() * 2 + 5) + 's';
+        snowflakes.appendChild(snowflake);
+    }
+}
+
+function createClouds() {
+    for (let i = 0; i < 100; i++) {
+        const cloud = document.createElement('div');
+        cloud.classList.add('cloud');
+        cloud.style.left = Math.random() * 100 + 'vw';
+        cloud.style.animationDuration = (Math.random() * 5 + 10) + 's';
+        spring.appendChild(cloud);
+    }
+}
+
+function createMist() {
+    for (let i = 0; i < 50; i++) {
+        const mist = document.createElement('div');
+        mist.classList.add('mist');
+        mist.style.left = Math.random() * 100 + 'vw';
+        mist.style.animationDuration = (Math.random() * 5 + 10) + 's';
+        spring.appendChild(mist);
+    }
+}
+
+searchBtn.addEventListener("click", () => {
+    const cityName = searchBox.value.trim();
+    if (cityName) {
+        checkWeather(cityName);
+    } else {
+        alert("Please enter a city name.");
+    }
+});
+
+    </script>
+</body>
+</html>
