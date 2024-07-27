@@ -20,13 +20,13 @@ This project is a simple web application that provides real-time weather informa
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/Slygriyrsk/weather-crypto-app.git
+   git clone https://github.com/Slygriyrsk/weather-crypto-js-html-css.git
    ```
 
 1.  **Navigate to the Project Directory**
 
     ```bash
-    cd weather-crypto-app
+    cd weather-crypto-js-html-css
     ```
 
 2.  **Open `index.html` in Your Browser**
